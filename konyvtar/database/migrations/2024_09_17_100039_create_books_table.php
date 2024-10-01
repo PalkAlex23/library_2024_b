@@ -12,27 +12,28 @@ return new class extends Migration
      */
     public function up(): void
     {
+        /* átnevezzük, Modell-ben definiáljuk */
         Schema::create('books', function (Blueprint $table) {
-            $table->id();
+            $table->id('book_id');
             $table->string('author');
             $table->string('title');
-            $table->integer('pieces');
+            /* $table->integer('pieces'); */
             $table->timestamps();
         });
 
         Book::create(['author'=>'Shakespear',
          'title'=> 'Spear',
-          'pieces'=> 40
+          // 'pieces'=> 40
         ]);
 
         Book::create(['author'=>'James bond',
          'title'=> 'Mission',
-          'pieces'=> 25
+          // 'pieces'=> 25
         ]);
 
         Book::create(['author'=>'John Flaggan',
          'title'=> 'Umbra',
-          'pieces'=> 10
+          // 'pieces'=> 10
         ]);
     }
 
