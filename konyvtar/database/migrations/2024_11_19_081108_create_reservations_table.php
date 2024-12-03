@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lendings', function (Blueprint $table) {
-            $table->primary(['user_id', 'copy_id', 'start']);
+        Schema::create('reservations', function (Blueprint $table) {
+            //$table->id();
+            $table->primary(['user_id', 'book_id', 'start']);
             $table->foreignId('user_id')->references('id')->on('users');
-            $table->foreignId('copy_id')->references('copy_id')->on('copies');
+            $table->foreignId('book_id')->references('book_id')->on('books');
             $table->date('start')->default(now());
-            $table->date('end')->nullable();
             // 0: nincs felszólítás, 1: első felszólítás
-            $table->smallInteger('warning')->default(0);
+            $table->boolean('message')->default(0);
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lendings');
+        Schema::dropIfExists('reservations');
     }
 };

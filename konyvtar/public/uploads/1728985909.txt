@@ -1,0 +1,8 @@
+adatbázis javítás:
+
+- mettől-medddig a FOGLALÁS táblában
+- egész órába vagy sem?
+- nyugta mező létrehozása a FOGLALÁS táblában
+- egy Foglalásban csak EGY nyugtára szerepelhet
+- a FOGLALÁS-ban néhány mezőnek/tulajdonságának a nevét pontosítani kell
+- a CIPŐ meg a CIPŐKÉSZLET táblákat javítani kell

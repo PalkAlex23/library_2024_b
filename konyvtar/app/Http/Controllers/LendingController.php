@@ -4,12 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Lending;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LendingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+
+    // alapfüggvények
+
     public function index()
     {
         return Lending::all();
@@ -53,5 +59,56 @@ class LendingController extends Controller
     public function destroy($user_id, $copy_id, $start)
     {
         $this->show($user_id, $copy_id, $start)->delete();
+    }
+
+
+    // lekérdezések
+    public function lendingsFilterByUser(){
+        // $user = Auth::user();	//bejelentkezett felhasználó
+        // copies: függvény neve!!
+        return Lending::with('copies')
+        // ->where('user_id','=',$user->id)
+        ->get();
+    }
+
+    public function lendingsCountDistinct() {
+        $user = Auth::user();
+        $lendings = DB::table('lendings as l')
+        ->join('copies as c', 'l.copy_id', '=', 'c.copy_id')
+        ->where('user_id', $user->id)
+        ->distinct('c.book_id')
+        ->count();
+        return $lendings;
+    }
+
+    public function activeLendingsData() {
+        $user = Auth::user();
+        $lendings = DB::table('lendings as l')
+        ->select('book_id', 'author', 'title')
+        ->join('copies as c', 'l.copy_id', '=', 'c.copy_id')
+        ->join('books as b', 'c.book_id', '=', 'b.book_id')
+        ->where('user_id', $user->id)
+        ->whereNull("end")
+        ->groupBy('book_id')
+        ->get();
+        return $lendings;
+    }
+
+    public function bringBack($copy_id, $start) {
+        // bejelentkezett felhasználó
+        $user = Auth::user();
+        // kölcsönzés rekordja
+        $lending = $this->show($user->id, $copy_id, $start);
+        // mai dátumot kap az end mező
+        $lending->end = date(now());
+        $lending->save();
+        // másik események
+        /*
+        DB::table('copies')
+        ->where('copy_id', $copy_id)
+        // update, insert paramétere lista!
+        ->update(['status' => 0]);
+        */
+        DB::select('CALL toStore(?)', array($copy_id));
     }
 }

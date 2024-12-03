@@ -12,7 +12,9 @@ class Lending extends Model
     protected $fillable = [
       'user_id',
       'copy_id',
-      'start'  
+      'start',
+      'end',
+      'warning'  
     ];
 
     // összetett kulcshoz tartozó mezők
@@ -25,5 +27,10 @@ class Lending extends Model
             ->where('start', '=', $this->getAttribute('start'));
 
         return $query;
+    }
+
+    public function copies() {  
+        //  kapcsolat iránya, paraméterek sorrendje: model, honnan, hova
+        return $this->belongsTo(Copy::class, 'copy_id', 'copy_id');   
     }
 }

@@ -46,4 +46,9 @@ class BookController extends Controller
     {
         //
     }
+
+    public function booksFilterByCopies() {
+        return Book::with('copies')
+        ->get();
+    }
 }

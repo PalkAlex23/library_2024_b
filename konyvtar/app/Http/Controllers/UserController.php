@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -38,13 +42,9 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $user = User::find($id);
-        $user->title = $request->title;
-        $user->descripton = $request->description;
-        $user->end_date = $request->end_date;
-        $user->user_id = $request->user_id;
-        $user->status = $request->status;
-        $user->save();
+        $record = User::find($id);
+        $record->fill($request->all());
+        $record->save();
     }
 
     /**
@@ -53,5 +53,42 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         User::find($id)->delete();
+    }
+
+
+    // speciális függvények
+    public function updatePassword(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            "password" => 'string|min:3|max:50'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors()->all()], 400);
+        }
+        $user = User::where("id", $id)->update([
+            "password" => Hash::make($request->password),
+        ]);
+        return response()->json(["user" => $user]);
+    }
+
+    public function userLendingsFilterByUser() {
+        $user = Auth::user();
+        return User::with('lendings')
+        ->where('id', $user->id)
+        ->get();
+    }
+
+    public function userReservationDetails() {
+        $user = Auth::user();
+        return User::with('reservations')
+        ->where('id', '=', $user->id)
+        ->get();
+    }
+
+    public function reservedCount() {
+        $user = Auth::user();
+        return DB::table('reservations')
+        ->where('user_id', '=', $user->id)
+        ->count();
     }
 }
